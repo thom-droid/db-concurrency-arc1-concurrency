@@ -1,5 +1,6 @@
 # Simple Booking System Skeleton
 
+동시성 제어를 
 Minimal Spring Boot project for experimenting with concurrent booking logic using Postgres 16 and HikariCP. The focus is on a tiny domain (users and seats) so you can concentrate on transaction handling strategies.
 
 ## Stack

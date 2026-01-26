@@ -48,8 +48,6 @@ public class SeatController {
      *     물론 기능적으로는 컨트롤러에서 트랜잭션을 관리하여 서비스와 동일하게 구현할 수도 있지만, 컨트롤러는 웹과 관련된
      *     로직만 수행하고 비즈니스 로직은 data layer와 맞물려 있으므로 데이터 로직만 처리하는 것이 좋다.
      * </p>
-     *
-     *
      */
     @PostMapping("/transaction-on-controller/{seatId}")
     @ResponseStatus(HttpStatus.CREATED)
@@ -72,5 +70,19 @@ public class SeatController {
 
         Map<String, Object> test = Map.of("test", reserved, "movies", allMovies);
         return ResponseEntity.ok().body(test);
+    }
+
+    /**
+     * <p>
+     *      자기 자신에게 선언되어 있는 메서드를 트랜잭션에 참여시키기 위해 {@code this.txMethod()} 와 같이 호출하더라도
+     *      이 메서드는 트랜잭션에 참여하지 않는다.
+     * </p>
+     *
+     */
+    @PostMapping("/self-invocation-inner-method/{seatId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> testSelfInvocationTransactionWork(@PathVariable Long seatId) {
+        seatService.outerCall(seatId);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,5 +1,7 @@
 package com.example.simplebooking.config;
 
+import com.example.simplebooking.movie.Movie;
+import com.example.simplebooking.movie.MovieRepository;
 import com.example.simplebooking.seat.Seat;
 import com.example.simplebooking.seat.SeatRepository;
 
@@ -16,13 +18,15 @@ public class DataInitializer {
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
     @Bean
-    ApplicationRunner seedDatabase(SeatRepository seatRepository) {
-        return args -> seed(seatRepository);
+    ApplicationRunner seedDatabase(SeatRepository seatRepository,
+                                   MovieRepository movieRepository
+    ) {
+        return args -> seed(seatRepository, movieRepository);
     }
 
     @Transactional
-    void seed(SeatRepository seatRepository) {
-        if (seatRepository.count() > 0) {
+    void seed(SeatRepository seatRepository, MovieRepository movieRepository) {
+        if (seatRepository.count() > 0 || movieRepository.count() > 0) {
             log.info("Skipping seed; data already present.");
             return;
         }
@@ -34,6 +38,9 @@ public class DataInitializer {
         // for (int i = 1; i <= 10; i++) {
         Seat seat = new Seat();
         seatRepository.save(seat);
+
+        Movie movie = new Movie();
+        movieRepository.save(movie);
         // }
         log.info("Seeded {} seats", seatRepository.count());
     }

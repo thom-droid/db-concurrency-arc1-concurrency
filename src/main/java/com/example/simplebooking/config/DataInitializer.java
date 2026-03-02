@@ -27,7 +27,8 @@ public class DataInitializer {
     @Transactional
     void seed(SeatRepository seatRepository, MovieRepository movieRepository) {
         if (seatRepository.count() > 0 || movieRepository.count() > 0) {
-            log.info("Skipping seed; data already present.");
+            seatRepository.deleteAll();
+            movieRepository.deleteAll();
             return;
         }
 
@@ -35,13 +36,14 @@ public class DataInitializer {
         // User bob = userRepository.save(User.builder().email("bob@example.com").displayName("Bob").build());
         // log.info("Seeded users {} and {}", alice.getEmail(), bob.getEmail());
 
-        // for (int i = 1; i <= 10; i++) {
-        Seat seat = new Seat();
-        seatRepository.save(seat);
+        for (int i = 1; i <= 10; i++) {
+            Seat seat = new Seat();
+            seatRepository.save(seat);
 
-        Movie movie = new Movie();
-        movieRepository.save(movie);
-        // }
+            Movie movie = new Movie();
+            movie.setTitle("Movie " + i);
+            movieRepository.save(movie);
+        }
         log.info("Seeded {} seats", seatRepository.count());
     }
 }

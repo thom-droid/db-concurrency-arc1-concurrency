@@ -50,6 +50,18 @@ public class SeatService {
     }
 
     /**
+     * check-then-act 방식이 아닌, atomic update
+     * db값을 비즈니스 로직에서 확인하고 업데이트를 실행하는 것이 아니라 쿼리 상으로 조건에 부합할 때만 업데이트
+     * 이는 check 와 act 사이에 발생할 수 있는 time gap을 없애기 위함
+     */
+    @Transactional
+    public boolean
+    reserveAtomic(Long seatId) {
+        int updated = seatRepository.reserveIfAvailable(seatId);
+        return updated == 1;
+    }
+
+    /**
      * <p>
      * 트랜잭션 범위를 설정하지 않고 비즈니스 로직을 수행
      * </p>

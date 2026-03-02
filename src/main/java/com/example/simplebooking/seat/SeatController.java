@@ -3,6 +3,7 @@ package com.example.simplebooking.seat;
 import com.example.simplebooking.movie.Movie;
 import com.example.simplebooking.movie.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public class SeatController {
     private final MovieService movieService;
 
     /**
-     * 자리를 예약한다.
+     * 자리를 예약한다. check-then-act 방식으로 업데이트 진행
      *
      * @param seatId 자리 아이디
      * @return 201 CREATED
@@ -32,6 +33,21 @@ public class SeatController {
     public ResponseEntity<String> reserveUnsafe(@PathVariable Long seatId) {
         seatService.reserveUnsafe(seatId);
         return ResponseEntity.ok("created");
+    }
+
+    /**
+     * atomic conditional update.
+     *
+     * @param seatId 자리 아이디
+     * @return 201 CREATED
+     */
+    @PostMapping("/reserve-atomic/{seatId}")
+    public ResponseEntity<String> reserveAtomic(@PathVariable Long seatId) {
+        boolean reserved = seatService.reserveAtomic(seatId);
+        if (reserved) {
+            return  ResponseEntity.status(HttpStatus.CREATED).body("created");
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("already reserved");
     }
 
     /**

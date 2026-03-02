@@ -76,6 +76,8 @@ public class SeatController {
      * <p>
      *      자기 자신에게 선언되어 있는 메서드를 트랜잭션에 참여시키기 위해 {@code this.txMethod()} 와 같이 호출하더라도
      *      이 메서드는 트랜잭션에 참여하지 않는다.
+     *      따라서 {@code SeatService#innerCall()}에서 seatId에 대해 트랜잭션을 수행하나 롤백은 되지 않아 API는 실패하지만
+     *      seat에 변경된 값은 저장된다.
      * </p>
      *
      */

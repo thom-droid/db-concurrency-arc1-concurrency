@@ -34,9 +34,7 @@ Minimal Spring Boot project for experimenting with concurrent booking logic usin
    ```bash
    curl http://localhost:8080/api/seats
    ```
-
-   Each seat response includes the optimistic locking `version` you can use during experiments.
-
+   
 ## Project Layout
 
 - `Seat` and `User` entities live under `com.example.simplebooking.seat` and `com.example.simplebooking.user` respectively.
@@ -49,3 +47,12 @@ Minimal Spring Boot project for experimenting with concurrent booking logic usin
 - Try optimistic locking retry loops leveraging the `@Version` column.
 - Introduce pessimistic locks via `@Lock` annotations or custom queries.
 - Add integration tests that simulate concurrent requests with `@Transactional` service methods.
+
+
+# API calls
+## update reservation using pessimistic locking
+   To test out concurrent pessimistic locking, concurrent requests are needed. The command below shoots 50 same HTTP request through curl
+   
+   ```bash
+   seq 1 50 | xargs -n1 -P50 -I{} curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8080/reserve-pessimistic/33 | sort | uniq -c
+   ```

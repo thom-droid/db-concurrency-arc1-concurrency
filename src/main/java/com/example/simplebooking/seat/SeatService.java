@@ -55,8 +55,7 @@ public class SeatService {
      * 이는 check 와 act 사이에 발생할 수 있는 time gap을 없애기 위함
      */
     @Transactional
-    public boolean
-    reserveAtomic(Long seatId) {
+    public boolean reserveAtomic(Long seatId) {
         int updated = seatRepository.reserveIfAvailable(seatId);
         return updated == 1;
     }
@@ -110,5 +109,18 @@ public class SeatService {
 
         // Force rollback if transaction is active
         throw new RuntimeException("boom");
+    }
+
+    /**
+     * pessimistic lock으로 순차적으로 예약 여부를 확인한다
+     * atomic update 와 다르게 로우에 X-lock을 걸어 트랜잭션이 끝날 때까지 상태 변화를 막는다
+     */
+    @Transactional
+    public boolean reservePessimisticLock(Long seatId) {
+        Seat seat = seatRepository.findByIdForUpdate(seatId).orElseThrow(NoSuchElementException::new);
+        if (seat.isReserved()) { return false; }
+        seat.setReserved(true);
+        seatRepository.save(seat);
+        return true;
     }
 }

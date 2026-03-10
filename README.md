@@ -54,5 +54,13 @@ Minimal Spring Boot project for experimenting with concurrent booking logic usin
    To test out concurrent pessimistic locking, concurrent requests are needed. The command below shoots 50 same HTTP request through curl
    
    ```bash
-   seq 1 50 | xargs -n1 -P50 -I{} curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8080/reserve-pessimistic/33 | sort | uniq -c
+   seq 1 50 | xargs -n1 -P50 -I{} curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8080/reserve-pessimistic/1 | sort | uniq -c
    ```
+   You'll get one 201 and forty-nine 409s.
+
+## optimistic lock
+   
+```bash
+    seq 1 2 | xargs -n1 -P2 -I{} curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8080/reserve-optimistic/2 | sort | uniq -c   
+```
+   You'll get one 201 and one 500 with ObjectOptimisticLOckingFailureException from spring.

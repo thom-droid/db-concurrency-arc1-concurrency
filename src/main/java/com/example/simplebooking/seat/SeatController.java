@@ -111,4 +111,12 @@ public class SeatController {
         }
         return ResponseEntity.status(HttpStatus.CONFLICT).body("already reserved");
     }
+
+    @PostMapping("/reserve-optimistic/{seatId}")
+    public ResponseEntity<?> reserveOptimisticLock(@PathVariable Long seatId) {
+        if (seatService.reserveOptimisticLocking(seatId)) {
+            return ResponseEntity.status(HttpStatus.CREATED).body("reserved");
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("already reserved or conflict");
+    }
 }

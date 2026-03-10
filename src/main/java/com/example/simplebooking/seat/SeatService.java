@@ -13,6 +13,7 @@ import java.util.NoSuchElementException;
 public class SeatService {
 
     private final SeatRepository seatRepository;
+    private final Seat2Repository seat2Repository;
 
     /**
      * <p>
@@ -122,5 +123,26 @@ public class SeatService {
         seat.setReserved(true);
         seatRepository.save(seat);
         return true;
+    }
+
+    /**
+     * optimistic lock 구현
+     * JPA가 제공하는 {@link jakarta.persistence.Version} 을 활용해 업데이트 시점에 충돌 감지
+     *
+     */
+    @Transactional
+    public boolean reserveOptimisticLocking(Long seatId) {
+        Seat2 seat2 = seat2Repository.findById(seatId).orElseThrow(NoSuchElementException::new);
+        if (!seat2.isReserved()) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            seat2.setReserved(true);
+            seat2Repository.save(seat2);
+            return true;
+        }
+        return false;
     }
 }
